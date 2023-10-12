@@ -44,13 +44,6 @@ local entity = {
     end
 }
 
-local guiLib = {
-    CreateLabel = function(v)
-        local newlab = Instance.new("TextLabel", v)
-        return newlab
-    end,
-}
-
 local tabvalue = 0
 function newTab(v)
     local newframe = Instance.new("Frame", newgui)
@@ -65,12 +58,14 @@ function newTab(v)
     newlab.BackgroundColor3 = Color3.fromRGB(40,40,40)
     newlab.BorderSizePixel = 0
     newlab.Text = v
+    newlab.BackgroundTransparency = 1
     tabvalue += 1
     local sortmods = Instance.new("UILayoutSorter", newframe)
     sortmods.Name = math.random()
 end
 function newButton(tab)
-    local newbutton = Instance.new("TextButton", tab.Tab)
+    local keybind = nil
+    local newbutton = Instance.new("TextButton", entity.getlplr().StarterGui.newgui[tab.Tab])
     newbutton.Position = Uidm2.fromScale(0,0)
     newbutton.Size = Uidm2.fromScale(1, .1)
     newbutton.BackgroundColor3 = Color3.fromRGB(40,40,40)
@@ -83,23 +78,55 @@ function newButton(tab)
     HiddenFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
     HiddenFrame.BorderSizePixel = 0
     HiddenFrame.Visible = false
+    local newbutton2 = Instance.new("TextBox", HiddenFrame)
+    newbutton2.Position = Uidm2.fromScale(0,0)
+    newbutton2.Size = Uidm2.fromScale(1, .1)
+    newbutton2.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    newbutton2.BorderSizePixel = 0
+    newbutton2.Name = "KeybindLol"
+    newbutton2.Text = "Keybind: "..tostring(keybind)
+    newbutton2.MouseLeave:Connect(function()
+        keybind = game.UserInputService.InputBegan:Connect(function(key, gpe)
+            if gpe then return end
+            keybind = key
+            return end
+        end)
+    end)
     local btnfuncs = {
         Enabled = false,
         ToggleBtn = function()
             btnfuncs.Enabled = not btnfuncs.Enabled
             tab.Function(btnfuncs.Enabled)
         end,
-
+        createToggle = function(v)
+            local enabled = false
+            local newbutton3 = Instance.new("TextButton", HiddenFrame)
+            newbutton3.Position = Uidm2.fromScale(0,0)
+            newbutton3.Size = Uidm2.fromScale(1, .1)
+            newbutton3.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            newbutton3.BorderSizePixel = 0
+            newbutton3.Name = v.Name
+            newbutton3.Text = v.Name
+            newbutton3.Mouse1ButtonDown:Connect(function()
+                enabled = not enabled
+                v.Function(enabled)
+            end)
+        end,
     }
     newbutton.Mouse1ButtonDown:Connect(function()
         btnfuncs.ToggleBtn()
         if btnfuncs.Enabled then
-            ts:Create(newbutton, TweenInfo.new(.4), {BackgroundColor3 = Color3.fromRGB(0,0,0)})
+            ts:Create(newbutton, TweenInfo.new(.8), {BackgroundColor3 = Color3.fromRGB(0,0,0)})
         else
-            ts:Create(newbutton, TweenInfo.new(.4), {BackgroundColor3 = Color3.fromRGB(40,40,40)})
+            ts:Create(newbutton, TweenInfo.new(.8), {BackgroundColor3 = Color3.fromRGB(40,40,40)})
         end
     end)
+    local gettabPath = entity.getlplr().StarterGui.newgui[tab.Tab].newlab
     newbutton.Mouse2ButtonDown:Connect(function()
         HiddenFrame.Visible = not HiddenFrame.Visible
+        gettabPath.Visible = not gettabPath.Visible
+        for i,v in pairs(gettabPath:GetChildren()) do
+            v.Visible = not v.Visible 
+        end
     end)
 end
